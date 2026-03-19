@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+const logFilePath = path.join(__dirname, '../logs/access.log');
 const express = require('express');
 const app = express();
 const PORT = 3000;
@@ -10,10 +13,15 @@ app.get('/test', (req, res) => {
     xForwardedFor: req.headers['x-forwarded-for'] || null,
     method: req.method,
     endpoint: req.originalUrl,
-    rateLimited: false // placeholder (we’ll use this later)
+    rateLimited: false
   };
 
+  // Console log
   console.log(JSON.stringify(log, null, 2));
+  
+  console.log("Writing to:", logFilePath);
+  // Write to file (append)
+  fs.appendFileSync(logFilePath, JSON.stringify(log) + '\n');
 
   res.json({
     message: "Test endpoint working",
