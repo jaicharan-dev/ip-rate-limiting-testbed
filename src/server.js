@@ -7,10 +7,13 @@ app.get('/test', (req, res) => {
   const log = {
     timestamp: new Date().toISOString(),
     ip: req.ip,
-    xForwardedFor: req.headers['x-forwarded-for'] || null
+    xForwardedFor: req.headers['x-forwarded-for'] || null,
+    method: req.method,
+    endpoint: req.originalUrl,
+    rateLimited: false // placeholder (we’ll use this later)
   };
 
-  console.log(log);
+  console.log(JSON.stringify(log, null, 2));
 
   res.json({
     message: "Test endpoint working",
