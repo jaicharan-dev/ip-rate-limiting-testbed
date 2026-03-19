@@ -20,16 +20,22 @@ The unreliability of IP addresses creates two critical problems:
 
 This project builds a testbed to **quantify** these failures through controlled experiments.
 
-## Project Status
+## Configuration
 
-🚧 **In Progress** – Building the research API testbed.
+The application uses environment variables for configuration. Copy `.env.example` to `.env` and adjust:
+
+```bash
+cp .env.example .env
 
 ## Tech Stack
 
-- Node.js / Express
-- MongoDB (for logging)
-- Winston / Morgan (structured logging)
-- express-rate-limit (rate limiting middleware)
+| Component | Why We Chose It |
+|-----------|-----------------|
+| **Node.js** | Non-blocking I/O, perfect for API concurrency, huge ecosystem |
+| **Express.js** | Middleware architecture ideal for request pipeline (IP → rate limit → log) |
+| **MongoDB** | Schema-less JSON documents – perfect for evolving log data |
+| **Winston + Morgan** | Structured JSON logging for easy export and analysis |
+| **express-rate-limit** | Battle-tested IP-based rate limiting middleware |
 
 ## Setup Instructions
 
