@@ -1,6 +1,9 @@
 import json
 import matplotlib.pyplot as plt
 
+# -------------------------------
+# Graph 1: Scenario 1
+# -------------------------------
 # --- Data from your experiments ---
 runs = [1, 2, 3]
 block_rates = [42.49, 57.28, 47.93]
