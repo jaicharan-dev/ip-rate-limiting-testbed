@@ -2,22 +2,42 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const rateLimit = require('express-rate-limit'); 
-
 const app = express();
 const PORT = 3000;
 
-// log file path
+//  log file path
 const logFilePath = path.join(__dirname, '../logs/access.log');
 
-// limiter 
+//  limiter
 const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 5,
+  windowMs: 60 * 1000,
+  max: 100,
   standardHeaders: true,
   legacyHeaders: false,
+
+  handler: (req, res) => {
+    const log = {
+      timestamp: new Date().toISOString(),
+      ip: req.ip,
+      xForwardedFor: req.headers['x-forwarded-for'] || null,
+      method: req.method,
+      endpoint: req.originalUrl,
+      rateLimited: true
+    };
+
+    // log to console
+    console.log("RATE LIMITED:", JSON.stringify(log, null, 2));
+
+    // save to file
+    fs.appendFileSync(logFilePath, JSON.stringify(log) + '\n');
+
+    res.status(429).json({
+      message: "Too many requests, please try again later."
+    });
+  }
 });
 
-// route 
+//  route 
 app.get('/test', limiter, (req, res) => {
   const log = {
     timestamp: new Date().toISOString(),
