@@ -1,3 +1,4 @@
+import json
 import matplotlib.pyplot as plt
 
 # --- Data from your experiments ---
@@ -89,4 +90,75 @@ plt.title("Per-User Request Behavior")
 plt.legend()
 
 plt.savefig("experiments/per_user_line.png")
+plt.show()
+
+# -------------------------------
+# Scenario 2 Data (from your run)
+# -------------------------------
+
+# -------------------------------
+# Step 1: Read log file
+# -------------------------------
+
+log_file = "logs/access.log"
+
+logs = []
+
+with open(log_file, "r") as f:
+    for line in f:
+        try:
+            logs.append(json.loads(line))
+        except:
+            continue  # skip bad lines if any
+
+# -------------------------------
+# Step 2: Extract data
+# -------------------------------
+
+requests = list(range(1, len(logs) + 1))
+
+ips = [entry["ip"] for entry in logs]
+rate_limited = [1 if entry["rateLimited"] else 0 for entry in logs]
+
+# -------------------------------
+# Step 3: Encode IPs
+# -------------------------------
+
+unique_ips = list(dict.fromkeys(ips))  # preserve order
+
+ip_map = {ip: idx + 1 for idx, ip in enumerate(unique_ips)}
+
+ip_values = [ip_map[ip] for ip in ips]
+
+# -------------------------------
+# Step 4: Separate allowed/blocked
+# -------------------------------
+
+allowed_x = [requests[i] for i in range(len(requests)) if rate_limited[i] == 0]
+allowed_y = [ip_values[i] for i in range(len(requests)) if rate_limited[i] == 0]
+
+blocked_x = [requests[i] for i in range(len(requests)) if rate_limited[i] == 1]
+blocked_y = [ip_values[i] for i in range(len(requests)) if rate_limited[i] == 1]
+
+# -------------------------------
+# Step 5: Plot
+# -------------------------------
+
+plt.figure()
+
+plt.scatter(allowed_x, allowed_y, marker='o', label='Allowed')
+plt.scatter(blocked_x, blocked_y, marker='x', label='Blocked')
+
+# Label IPs properly
+yticks = list(ip_map.values())
+ylabels = list(ip_map.keys())
+
+plt.yticks(yticks, ylabels)
+
+plt.xlabel("Request Number")
+plt.ylabel("IP Address")
+plt.title("IP-Based Rate Limiting Across Network Change")
+
+plt.legend()
+
 plt.show()
