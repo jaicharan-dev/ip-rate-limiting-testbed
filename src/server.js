@@ -1,12 +1,24 @@
+const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const logFilePath = path.join(__dirname, '../logs/access.log');
-const express = require('express');
+const rateLimit = require('express-rate-limit'); 
+
 const app = express();
 const PORT = 3000;
 
-// Test endpoint
-app.get('/test', (req, res) => {
+// log file path
+const logFilePath = path.join(__dirname, '../logs/access.log');
+
+// limiter 
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// route 
+app.get('/test', limiter, (req, res) => {
   const log = {
     timestamp: new Date().toISOString(),
     ip: req.ip,
@@ -16,11 +28,7 @@ app.get('/test', (req, res) => {
     rateLimited: false
   };
 
-  // Console log
   console.log(JSON.stringify(log, null, 2));
-  
-  console.log("Writing to:", logFilePath);
-  // Write to file (append)
   fs.appendFileSync(logFilePath, JSON.stringify(log) + '\n');
 
   res.json({
@@ -29,6 +37,7 @@ app.get('/test', (req, res) => {
   });
 });
 
+// start server
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
