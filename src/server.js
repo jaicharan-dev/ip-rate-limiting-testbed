@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const rateLimit = require('express-rate-limit'); 
 const app = express();
+app.set('trust proxy', true);
 const PORT = 3000;
 
 //  log file path
@@ -11,7 +12,7 @@ const logFilePath = path.join(__dirname, '../logs/access.log');
 //  limiter
 const limiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 100,
+  max: 5,
   standardHeaders: true,
   legacyHeaders: false,
 
