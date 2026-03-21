@@ -11,7 +11,7 @@ const logFilePath = path.join(__dirname, '../logs/access.log');
 
 //  limiter
 const limiter = rateLimit({
-  windowMs: 60 * 1000,
+  windowMs: 30 * 1000,
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
@@ -19,10 +19,12 @@ const limiter = rateLimit({
   handler: (req, res) => {
     const log = {
       timestamp: new Date().toISOString(),
+      attackType: req.headers['x-attack-type'] || "normal",
       ip: req.ip,
       xForwardedFor: req.headers['x-forwarded-for'] || null,
       method: req.method,
       endpoint: req.originalUrl,
+      vpnSession: req.headers['x-session-label'] || "UNKNOWN",
       rateLimited: true
     };
 
@@ -42,10 +44,12 @@ const limiter = rateLimit({
 app.get('/test', limiter, (req, res) => {
   const log = {
     timestamp: new Date().toISOString(),
+    attackType: req.headers['x-attack-type'] || "normal",
     ip: req.ip,
     xForwardedFor: req.headers['x-forwarded-for'] || null,
     method: req.method,
     endpoint: req.originalUrl,
+    requestNumber: req.headers['x-request-number'] || null,
     rateLimited: false
   };
 

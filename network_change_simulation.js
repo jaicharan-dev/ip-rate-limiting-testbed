@@ -33,7 +33,7 @@ async function runPhase(label, count, delay) {
   // Phase 1 → WiFi
   await runPhase("WIFI", 10, 2000);
 
-  console.log("\n⚠️ SWITCH NETWORK NOW (WiFi → Hotspot)\n");
+  console.log("\n SWITCH NETWORK NOW (WiFi → Hotspot)\n");
   console.log("Waiting 20 seconds...\n");
 
   await new Promise(r => setTimeout(r, 20000));
